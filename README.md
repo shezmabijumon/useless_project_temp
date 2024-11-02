@@ -1,4 +1,4 @@
-![image](https://github.com/user-attachments/assets/214f62c6-93d1-4221-a043-f24fb4e8b194)<img width="1280" alt="readme-banner" src="https://github.com/user-attachments/assets/35332e92-44cb-425b-9dff-27bcf1023c6c">
+<img width="1280" alt="readme-banner" src="https://github.com/user-attachments/assets/35332e92-44cb-425b-9dff-27bcf1023c6c">
 
 # COMPRESS PDF 🎯
 
@@ -39,10 +39,6 @@ Run `pip install -r requirements.txt` once you clone the repository to install F
 python app.py
 ```
 
-
-### Project Documentation
-For Software:
-
 # Screenshots (Add at least 3)
 ![Uploaded PDF](https://github.com/user-attachments/assets/d4f4371b-6cba-41cc-af77-3440cfe6158f)
 *User has uploaded a PDF and a cool loading bar animation to show that the compression (the fake one) process is complete*
@@ -60,6 +56,7 @@ For Software:
 ### Project Demo
 # Video
 [LINK](https://imgur.com/a/smwpouX)
+
 *Upload PDF -> select one of the modes -> click COMPRESS! -> Click save modified PDF to check it out for yourself*
 
 
