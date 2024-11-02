@@ -1,0 +1,264 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="{{ url_for('static',filename='css/main.css')}}">
+  <script src="https://unpkg.com/pdf-lib"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+    <script>
+    // Set up PDF.js after it loads
+    const pdfjsLib = window['pdfjs-dist/build/pdf'];
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js';
+  </script>
+  
+
+  <title>PDF-LIB test</title>
+</head>
+<body>
+  <div class="wrapper">
+  <h1>Compress PDF!</h1>
+
+  <!-- File Upload -->
+  <label for="cv" class="file-upload">
+    <div class="file-upload-content">
+      <svg
+        aria-hidden="true"
+        class="file-upload-icon"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M7 16V4m8 12V4m-4 8v8M5 8h14"
+        ></path>
+      </svg>
+      <p class="file-upload-text">
+        <span class="font-semibold">Click to upload</span> or drag and drop
+      </p>
+      <p class="file-upload-info">PDF FILES ONLY</p>
+    </div>
+    <input
+      id="cv"
+      type="file"
+      accept=".pdf"
+      class="file-upload-input"
+      onChange="handleFileChange(event)"
+    />
+  </label>
+
+  <div class="uploaded-file-name">
+    <p id="file-name" class="uploaded-file-name"></p>
+  </div>
+  
+  <div class="buttonwrapper">
+    <h4>Set Percentage of Compression:</h4>
+    
+    <div class="buttons">
+      <button id="mode1" onclick="setMode(1)">25%</button>
+      <button id="mode2" onclick="setMode(2)">50%</button>
+      <button id="mode3" onclick="setMode(3)">75%</button>
+      <button id="mode4" onclick="setMode(4)">100%</button>
+    </div>
+    <button onclick="extractText()" class="acceptbutton"> Compress!</button>
+  </div>
+
+
+  <!-- Loading Bar -->
+  <div id="loadingBar" style="display: none; width: 100%; background-color: #f3f3f3; border: 1px solid #ccc; height: 20px; position: relative;">
+    <div id="loadingProgress" style="width: 0%; height: 100%; background-color: #4caf50; "></div>
+  </div>
+
+  <div class="mode">
+    <p>Selected Mode: <span id="selectedMode">None</span></p>
+    <p style="display: none;" id="completed"> Done! </p>
+  </div>
+  
+  <!-- Button to Save Modified Text as a New PDF -->
+    <div class="save">
+     <button  onclick="saveModifiedPdf()">Save as New PDF</button>
+    </div>
+
+  </div>
+
+</body>
+
+
+<script>
+  let requiredText = '';
+  let currentMode = 0;
+  function setMode(mode) {
+    currentMode = mode;
+    document.getElementById('selectedMode').textContent = currentMode;
+  }
+
+  async function extractText() {
+    // for loading bar 
+    const loadingBar = document.getElementById('loadingBar');
+    const loadingProgress = document.getElementById('loadingProgress');
+    const completedMessage = document.getElementById('completed');
+
+    loadingBar.style.display = 'block';
+    loadingProgress.style.width = '0%';
+
+    const fileInput = document.getElementById('cv').files[0];
+    if(!fileInput) {
+      loadingBar.style.display = 'none';
+      return alert("Please upload a PDF!");
+    }
+
+    loadingBar.style.display = 'block';
+    //loadingProgress.style.width = '0%';
+
+    const fileReader = new FileReader();
+    fileReader.onload = async function() {
+      const typedArray = new Uint8Array(this.result);
+
+      // LOAD PDF
+      const pdf = await pdfjsLib.getDocument(typedArray).promise;
+
+      // extract text from each page
+      let fullText = "";
+      for(let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const textContent = await page.getTextContent();
+
+
+        // extract text items and add to full text
+        textContent.items.forEach(item => {
+          fullText += item.str + " ";
+        });
+        fullText += "\n\n";
+
+      // Update loading progress
+      loadingProgress.style.width = `${(i / pdf.numPages) * 100}%`; // Update the width based on progress
+
+      }
+      // send extracted text to Flask
+      const response = await fetch('/modify_text', {
+        method: 'POST', 
+        headers: {'Content-Type': 'application/json'}, 
+        body: JSON.stringify({text: fullText, mode:currentMode})
+      });
+
+
+      const result = await response.json();
+      requiredText = result.text;
+
+
+      // Hide loading bar
+      loadingBar.style.display = 'none';
+      completedMessage.style.display = 'block';
+    };
+
+    fileReader.readAsArrayBuffer(fileInput);
+  }
+
+
+  async function saveModifiedPdf() {
+    const modifiedText = requiredText;
+    const modifiedLines = modifiedText.split('\n').filter(line => line.trim() !== '');
+
+    // Create a new PDF
+    const pdfDoc = await PDFLib.PDFDocument.create();
+    
+    // PDF configuration
+    const pageWidth = 600;
+    const pageHeight = 800;
+    const margin = 20;
+    const fontSize = 12;
+    const lineHeight = fontSize * 1.2; // 20% spacing between lines
+    const textWidth = pageWidth - (margin * 2);
+    const linesPerPage = Math.floor((pageHeight - (margin * 2)) / lineHeight);
+    
+    // Create first page
+    let currentPage = pdfDoc.addPage([pageWidth,   pageHeight]);
+    let currentY = pageHeight - margin;
+    let lineCounter = 0;
+
+    // Process each line
+    for (let line of modifiedLines) {
+      // Check if we need a new page
+      if (lineCounter >= linesPerPage) {
+        currentPage = pdfDoc.addPage([pageWidth, pageHeight]);
+        currentY = pageHeight - margin;
+        lineCounter = 0;
+      }
+
+      // Handle long lines that might need wrapping
+      const words = line.split(' ');
+      let currentLine = '';
+      
+      for (let word of words) {
+        const testLine = currentLine + (currentLine ? ' ' : '') + word;
+        const testWidth = (testLine.length * fontSize * 0.6); // Approximate width calculation
+        
+        if (testWidth > textWidth) {
+          // Draw current line
+          currentPage.drawText(currentLine, {
+            x: margin,
+            y: currentY,
+            size: fontSize
+          });
+          
+          // Move to next line
+          currentY -= lineHeight;
+          lineCounter++;
+          
+          // Check if we need a new page
+          if (lineCounter >= linesPerPage) {
+            currentPage = pdfDoc.addPage([pageWidth, pageHeight]);
+            currentY = pageHeight - margin;
+            lineCounter = 0;
+          }
+          
+          currentLine = word;
+        } else {
+          currentLine = testLine;
+        }
+      }
+      
+      // Draw any remaining text
+      if (currentLine) {
+        currentPage.drawText(currentLine, {
+          x: margin,
+          y: currentY,
+          size: fontSize
+        });
+        
+        currentY -= lineHeight;
+        lineCounter++;
+      }
+      
+      // Add extra space between paragraphs
+      currentY -= lineHeight * 0.5;
+      lineCounter += 0.5;
+    }
+
+    // Save and download the PDF
+    const pdfBytes = await pdfDoc.save();
+    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'modified.pdf';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    
+}
+
+function handleFileChange(event) {
+  const fileInput = event.target;
+  const fileName = fileInput.files[0] ? fileInput.files[0].name : '';
+  document.getElementById('file-name').textContent = `Uploaded file: ${fileName}`;
+}
+</script>
+</html>
