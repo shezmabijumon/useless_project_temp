@@ -1,95 +1,72 @@
-<img width="1280" alt="readme-banner" src="https://github.com/user-attachments/assets/35332e92-44cb-425b-9dff-27bcf1023c6c">
+![image](https://github.com/user-attachments/assets/214f62c6-93d1-4221-a043-f24fb4e8b194)<img width="1280" alt="readme-banner" src="https://github.com/user-attachments/assets/35332e92-44cb-425b-9dff-27bcf1023c6c">
 
-# [Project Name] 🎯
+# COMPRESS PDF 🎯
 
 
 ## Basic Details
-### Team Name: [Name]
+### Team Name: Charlie's Angels
 
 
 ### Team Members
-- Team Lead: [Name] - [College]
-- Member 2: [Name] - [College]
-- Member 3: [Name] - [College]
+- Team Lead: Kenz E S - CET
+- Member 2: Prathith Chivukula - CET
+- Member 3: Shezma Bijumon - CET
 
 ### Project Description
-[2-3 lines about what your project does]
+A seemingly innocuous compress PDF tool.
 
 ### The Problem (that doesn't exist)
-[What ridiculous problem are you solving?]
+Ever wanted to compress a PDF and get a different PDF as the output? We've got you covered!
 
 ### The Solution (that nobody asked for)
-[How are you solving it? Keep it fun!]
+We take the contents of your precious PDF file that you need to compress and turn the text into a whole bunch of mumbo-jumbo, where you can control the degree of mumbo-jumbo. And we give it to you back, compressed (because it only has the text. Sorry Adobe, we strongly dislike working with PDFs), because we're not that evil :)
 
 ## Technical Details
 ### Technologies/Components Used
 For Software:
-- [Languages used]
-- [Frameworks used]
-- [Libraries used]
-- [Tools used]
-
-For Hardware:
-- [List main components]
-- [List specifications]
-- [List tools required]
+- HTML/CSS/JS
+- Flask
+- Python
+- `google-generativeai` for LLM support
 
 ### Implementation
 For Software:
 # Installation
-[commands]
+Run `pip install -r requirements.txt` once you clone the repository to install Flask and `python-dotenv`. Additionally, run `npm i pdfjs-dist pdf-lib` for the other dependencies. 
 
 # Run
-[commands]
+```python
+python app.py
+```
+
 
 ### Project Documentation
 For Software:
 
 # Screenshots (Add at least 3)
-![Screenshot1](Add screenshot 1 here with proper name)
-*Add caption explaining what this shows*
+![Uploaded PDF](https://github.com/user-attachments/assets/d4f4371b-6cba-41cc-af77-3440cfe6158f)
+*User has uploaded a PDF and a cool loading bar animation to show that the compression (the fake one) process is complete*
 
-![Screenshot2](Add screenshot 2 here with proper name)
-*Add caption explaining what this shows*
+![Input PDF file](https://github.com/user-attachments/assets/1afd84f4-fb33-4ec4-8b7d-fd622087d266)
+*These are the contents of the input PDF file*
 
-![Screenshot3](Add screenshot 3 here with proper name)
-*Add caption explaining what this shows*
+![The RED BUTTON](https://github.com/user-attachments/assets/fc46b23a-5f23-4448-bfed-b8c5bef82bae)
+*Whatever you do, do NOT click this button!*
 
-# Diagrams
-![Workflow](Add your workflow/architecture diagram here)
-*Add caption explaining your workflow*
+![The output](https://github.com/user-attachments/assets/16e1e15a-14e3-419e-95e0-ffe97c4e74fd)
+*What the contents of the output PDF look like*
 
-For Hardware:
-
-# Schematic & Circuit
-![Circuit](Add your circuit diagram here)
-*Add caption explaining connections*
-
-![Schematic](Add your schematic diagram here)
-*Add caption explaining the schematic*
-
-# Build Photos
-![Components](Add photo of your components here)
-*List out all components shown*
-
-![Build](Add photos of build process here)
-*Explain the build steps*
-
-![Final](Add photo of final product here)
-*Explain the final build*
 
 ### Project Demo
 # Video
-[Add your demo video link here]
-*Explain what the video demonstrates*
+[LINK](https://imgur.com/a/smwpouX)
+*Upload PDF -> select one of the modes -> click COMPRESS! -> Click save modified PDF to check it out for yourself*
 
-# Additional Demos
-[Add any extra demo materials/links]
 
 ## Team Contributions
-- [Name 1]: [Specific contributions]
-- [Name 2]: [Specific contributions]
-- [Name 3]: [Specific contributions]
+- Kenz: NLP and LLM work
+- Prathith: Front-end PDF and backend using Flask
+- Shezma: UI design and backend using Flask
 
 ---
 Made with ❤️ at TinkerHub Useless Projects 
